@@ -1,0 +1,22 @@
+{
+  "name": "articles",
+  "version": "0.0.0",
+  "description": "<!-- [![build status][1]][2] [![dependency status][3]][4] -->",
+  "main": "index.js",
+  "bin": {
+    "articles": "js-to-md.js"
+  },
+  "dependencies": {
+    "falafel": "~0.2.1",
+    "optimist": "~0.5.0",
+    "esprima": "~1.1.0-dev"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "author": "",
+  "license": "BSD",
+  "readmeFilename": "README.md"
+}
