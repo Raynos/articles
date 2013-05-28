@@ -5,6 +5,10 @@ A delayed computation is a function that will do some computation
     when called. Because of the delayed nature the computation may
     be asynchronous so the function takes a callback.
 
+Note: the term "delayed computation" is just a temporary name
+    so we can talk about this idea, I do not recommend using this
+    name as it's a) confusing and b) this concept is hard to name.
+
 ## A delayed computation
 
 This means that a delayed computation can be seen as a function
