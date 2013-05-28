@@ -5,6 +5,8 @@ A delayed computation is a function that will do some computation
     when called. Because of the delayed nature the computation may
     be asynchronous so the function takes a callback.
 
+## A delayed computation
+
 This means that a delayed computation can be seen as a function
     that takes a callback and does some work.
 
@@ -42,6 +44,10 @@ function readPackageJson(callback) {
 function readProject(callback) {
     fs.readFile(process.cwd(), callback)
 }
+
+readPackageJson(function (err, file) {
+    // file is the package.json string in `cwd`
+})
 /*
 
 These look exactly like normal functions that use callbacks that
@@ -51,14 +57,18 @@ These look exactly like normal functions that use callbacks that
     means to do that operation.
 
 There is another way that we can generate these delayed computations
-    using `Function.prototype.bind`
+    using [`Function.prototype.bind`][1]
+
+  [1]: https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Function/bind
 
 */
-var readPackageJson = fs.readFile.bind(
+var readPackageJson = fs.readFile.bind(null,
     path.join(process.cwd(), "package.json"))
 
-var readProject = fs.readFile.bind(process.cwd())
+var readProject = fs.readFile.bind(null, process.cwd())
 /*
+
+## More general delayed computations
 
 Here we use bind to create a delayed computation for us. We just
     basically tell it to create a function which accepts a callback
@@ -75,9 +85,11 @@ function readPackageJson(folder) {
 }
 
 function readPackageJson(folder) {
-    return fs.readFile.bind(path.join(folder, "package.json"))
+    return fs.readFile.bind(null, path.join(folder, "package.json"))
 }
 /*
+
+## the getting of a profile example
 
 Here we have used both the longer and the `.bind` form. We will be
     using the shorter, more convenient bind form of creating
@@ -148,6 +160,8 @@ Now the complex parts, code wise in the algorithm is the notion
     of asynchronously transforming things because both transforms
     include a `if (err) { callback(err) }` block and a level of
     indentation.
+
+## The usage of chain to write more readable code
 
 We can make this simpler by writing a function that does the
     generic parts of an asychronous transformation. For now
@@ -232,4 +246,52 @@ Note that in this implementation we just say the important bits.
 The benefit of our usage of chain is the ability to express our
     actual algorithm without the boilerplate, this improves our
     reasoning ability
+
+## But what about callbacks, they can do it too?
+
+Now to be fair the long example is overly descriptive and contains
+    lots of comments, we should remind ourselves to compare it to
+    a plain callbacks version of the code
+*/
+function getProfile(profileName, callback) {
+    profilesFolder(function (err, profilesFolder) {
+        if (err) {
+            return callback(err)
+        }
+
+        var fileUri = path.join(profilesFolder, profileName + ".json")
+        fs.readFile(fileUri, function (err, content) {
+            if (err) {
+                return callback(err)
+            }
+
+            safeParse(content, callback)
+        })
+    })
+}
+/*
+
+The main difference with the vanilla callback version and the
+    delayed computation version is the usage of if (err) cb(err)
+    and the lack of emphasis on asynchronous transformations.
+
+If we were to describe this algorithm it would be
+
+ - get profilesFolder
+ - compute fileUri
+ - get file content by fileUri
+ - compute the json parse of the file content
+ - pass the json to the continuation callback
+
+This description of the algorithm is more procedural and this leads
+    us to an insight that usage of delayed computation and the
+    asynchronous transform `chain` allows us to write and read
+    our code as a set of functional transformations that apply
+    on input of a function to return an output.
+
+I find that writing code as a set of functional transformations
+    allows me to reason about my code at the problem domain level
+    rather then at the procedural machine level. This greatly helps
+    my ability to reason about code.
+
 */
