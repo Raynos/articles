@@ -25,6 +25,10 @@ function doWork(callback) {
 For our use-cases we use the standard node style callback so that
     a delayed computation can either return a result or an error.
 
+A delayed computation and an "node-style" asynchronous function
+    that takes a callback are similar. The main difference is that
+    a delayed computation only takes one argument, the callback.
+
 Now it should be noted that within the scope of single threaded
     javascript like in browsers or in node.js it would not make
     sense to do a bunch of expensive computation in a for loop
